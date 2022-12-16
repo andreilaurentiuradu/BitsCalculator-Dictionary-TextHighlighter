@@ -36,7 +36,8 @@ int in_dictionary(struct dictionary_entry *d, char *cuvant, int n) {
             } else {
                 if (d[poz].priority == d[i].priority &&
                     strcmp(d[poz].word, d[i].word) > 0) {
-                        //in caz de aceeasi prioritate il luam pe cel mai mic lexicografic
+                    // in caz de aceeasi prioritate il luam pe cel mai mic
+                    // lexicografic
                     poz = i;
                 }
             }
@@ -57,18 +58,16 @@ int main() {
     char cuvant[21];
     struct dictionary_entry *d = malloc(n * sizeof(struct dictionary_entry));
 
+    // adaugam cuvintele in dictionar cu prioritatea 0
     for (int i = 0; i < n; ++i) {
         scanf("%s", cuvant);
         add(d, cuvant, i, 0);
         // printf("cuvant:%s   prio:%d\n", d[i].word, d[i].priority);
     }
 
-    // for(int i = 0; i < n; ++i) {
-    //     printf("cuvant:%s   prio:%d\n", d[i].word, d[i].priority);
-    // }
     int m;
     scanf("%d", &m);
-    int nr = 0;
+
     for (int i = 1; i <= m; ++i) {
         scanf("%s", cuvant);
 
@@ -87,7 +86,6 @@ int main() {
                 d = realloc(d, (n + 1) * sizeof(struct dictionary_entry));
                 add(d, cuvant, n, 1);
                 ++n;
-                nr++;
             } else {
                 // daca face match crestem prioritatea
                 d[poz].priority++;
@@ -96,38 +94,32 @@ int main() {
         } else {
             // daca e cu * la final punem \0 in locul stelutei
             cuvant[strlen(cuvant) - 1] = '\0';
-            int poz = in_dictionary(d, cuvant, n);
-            if (poz == -1) {
-                // daca nu face match in dictionar il adaugam
+            bool ok = false;
+            for (int i = 0; i < n; ++i) {
+                if (strcmp(d[i].word, cuvant) == 0) {
+                    // daca cuvantul se afla in dictionar
+                    d[i].priority++;
+                    ok = true;
+                    break;
+                }
+            }
+            // daca cuvantul nu se afla in dictionar il adaugam
+            if (!ok) {
                 d = realloc(d, (n + 1) * sizeof(struct dictionary_entry));
                 add(d, cuvant, n, 1);
                 ++n;
-            } else {
-                int ok = 0;
-                for (int i = 0; i < n; ++i) {
-                    if (strcmp(d[i].word, cuvant) == 0) {
-                        //daca cuvantul se afla exact asa in dictionar si nu face doar match
-                        d[i].priority++;
-                        ok = 1;
-                        break;
-                    }
-                }
-                if (!ok) {
-                    d = realloc(d, (n + 1) * sizeof(struct dictionary_entry));
-                    add(d, cuvant, n, 1);
-                    ++n;
-                }
             }
             printf("%s ", cuvant);
         }
     }
 
-    // qsort(d, n, sizeof(struct dictionary_entry), cmp);
+    return 0;
+}
+
+// qsort(d, n, sizeof(struct dictionary_entry), cmp);
     // printf("\n");
     // for (int i = 0; i < n; ++i) {
     //     if(d[i].priority != 0)
     //         printf("cuvant:%s   prio:%d\n", d[i].word, d[i].priority);
     // }
     // printf("%d\n", nr);
-    return 0;
-}
